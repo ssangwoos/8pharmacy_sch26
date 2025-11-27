@@ -375,3 +375,98 @@ input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-righ
     font-size: 0.8rem;
 }
 .btn-sm-del:hover { background: #e74c3c; }
+/* style.css 맨 아래에 추가 */
+
+/* =========================================
+   🚨 모바일 반응형 스타일 (화면 폭 768px 이하)
+   ========================================= */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px; /* 모바일에서 여백 줄임 */
+    }
+
+    /* 메인 타이틀 크기 줄임 */
+    #main-title {
+        font-size: 1.5rem;
+    }
+
+    /* 메인 컨테이너: 세로 배치로 변경 */
+    .main-container {
+        flex-direction: column; /* 옆으로 나란히 -> 위아래로 */
+        padding: 10px;
+        gap: 15px;
+    }
+
+    /* 달력과 사이드바 너비를 100%로 */
+    .calendar-section, .sidebar-section {
+        width: 100%;
+        flex: none; /* flex 비율 해제 */
+    }
+
+    /* 사이드바 스타일 조정 */
+    .sidebar-section {
+        border-left: none;
+        border-top: 1px solid #eee; /* 위쪽에 경계선 */
+        padding-left: 0;
+        padding-top: 20px;
+        min-width: auto;
+    }
+
+    /* 달력 헤더 (버튼과 년월) 크기 조정 */
+    .header {
+        margin-bottom: 10px;
+    }
+    .year-month {
+        font-size: 1.2rem;
+    }
+    .btn-nav {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* 달력 셀 높이 줄임 (화면에 더 많이 보이게) */
+    .day-cell {
+        min-height: 80px; 
+        padding: 2px;
+    }
+
+    /* 날짜 숫자 크기 줄임 */
+    .date-num {
+        font-size: 0.8rem;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+    }
+
+    /* 근무 바(스케줄) 크기 줄임 */
+    .shift-bar {
+        font-size: 0.65rem; /* 글자 크기 축소 */
+        padding: 2px 4px;
+        margin-bottom: 1px;
+        border-radius: 2px;
+    }
+
+    /* 요일 헤더 폰트 줄임 */
+    .day-header {
+        padding: 5px;
+        font-size: 0.9rem;
+    }
+
+    /* 모달 창 크기 조정 */
+    .modal-content {
+        width: 95%; /* 모바일에서 더 넓게 */
+        margin: 10% auto;
+        padding: 20px;
+    }
+
+    /* 폼 입력 요소 폰트 크기 최적화 (iOS 확대 방지) */
+    select, input[type="text"], input[type="date"], input[type="password"], textarea {
+        font-size: 16px; /* 16px 미만이면 아이폰에서 확대됨 */
+        padding: 10px;
+    }
+    
+    /* 시간 선택 박스 유연하게 */
+    .time-select-row select {
+        width: 45%;
+    }
+}
