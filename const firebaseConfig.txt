@@ -1,0 +1,8 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyD4m17c3vdKM4p1c0sp0CJ6fetUwf5A0xA",
+  authDomain: "pharmacy-sch-251127.firebaseapp.com",
+  projectId: "pharmacy-sch-251127",
+  storageBucket: "pharmacy-sch-251127.firebasestorage.app",
+  messagingSenderId: "1028219799154",
+  appId: "1:1028219799154:web:669dc1a10e7a1f5f8f64eb"
+};
