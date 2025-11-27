@@ -1,18 +1,26 @@
-/* style.css : 최종 전체 코드 (2025-11-27 버전) */
+/* style.css : 2025-11-27 최종 완벽 통합본 */
 
+/* =========================================
+   1. 기본 변수 및 초기화
+   ========================================= */
 :root {
-    --bg-color: #f4f7f6;       /* 배경색 */
-    --border-color: #e0e0e0;   /* 테두리 */
-    --sunday-color: #ff6b6b;   /* 일요일 (빨강) */
-    --saturday-color: #4a90e2; /* 토요일 (파랑) */
-    --primary-color: #4a90e2;  /* 메인 컬러 */
-    --success-color: #5cb85c;  /* 저장 버튼 (초록) */
-    --danger-color: #e74c3c;   /* 삭제 버튼 (빨강) */
-    --input-bg: #f9f9f9;       /* 입력창 배경 (연회색) */
+    --bg-color: #f4f7f6;       /* 전체 배경색 */
+    --card-bg: #ffffff;        /* 카드 배경색 */
+    --border-color: #e0e0e0;   /* 테두리 색 */
+    
+    --primary-color: #4a90e2;  /* 메인 강조색 (파랑) */
+    --success-color: #5cb85c;  /* 저장/추가 (초록) */
+    --danger-color: #e74c3c;   /* 삭제/취소 (빨강) */
     --text-color: #333333;     /* 기본 글자색 */
+    --input-bg: #f9f9f9;       /* 입력창 배경 */
+    
+    --sunday-color: #ff6b6b;   /* 일요일 색 */
+    --saturday-color: #4a90e2; /* 토요일 색 */
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: 'Noto Sans KR', sans-serif;
@@ -21,13 +29,13 @@ body {
     margin: 0;
     padding: 20px;
     display: flex;
-    flex-direction: column; /* 세로 정렬 (헤더 + 메인) */
+    flex-direction: column;
     align-items: center;
     min-height: 100vh;
 }
 
 /* =========================================
-   1. 상단 헤더 (타이틀 & 설정버튼)
+   2. 상단 헤더 영역
    ========================================= */
 .main-header {
     width: 100%;
@@ -43,6 +51,8 @@ body {
     font-weight: 700;
     color: #2c3e50;
     margin: 0;
+    /* 모바일에서 타이틀이 길어질 경우 줄바꿈 허용 */
+    word-break: keep-all; 
 }
 
 .btn-settings {
@@ -56,32 +66,43 @@ body {
     color: #555;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     transition: all 0.2s;
+    white-space: nowrap; /* 버튼 글자 줄바꿈 방지 */
 }
-.btn-settings:hover { background: #eee; transform: translateY(-2px); }
 
+.btn-settings:hover {
+    background: #eee;
+    transform: translateY(-2px);
+}
 
 /* =========================================
-   2. 메인 컨테이너 (달력 + 사이드바)
+   3. 메인 레이아웃 (달력 + 사이드바)
    ========================================= */
 .main-container {
     display: flex;
     gap: 20px;
     width: 100%;
     max-width: 1600px;
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-/* --- 왼쪽: 달력 영역 --- */
-.calendar-section { flex: 3; }
+/* --- 왼쪽: 달력 섹션 --- */
+.calendar-section {
+    flex: 3; /* 공간을 3만큼 차지 */
+}
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+}
+
+.year-month {
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
 .btn-nav {
@@ -93,12 +114,11 @@ body {
     font-weight: bold;
     cursor: pointer;
     font-size: 0.95rem;
+    transition: opacity 0.2s;
 }
 .btn-nav:hover { opacity: 0.9; }
 
-.year-month { font-size: 1.8rem; font-weight: bold; }
-
-/* 달력 그리드 */
+/* 달력 그리드 (7열) */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -106,6 +126,7 @@ body {
     border-left: 1px solid var(--border-color);
 }
 
+/* 요일 헤더 (일, 월, 화...) */
 .day-header {
     background: #f8f9fa;
     padding: 10px;
@@ -117,6 +138,7 @@ body {
 .day-header.sun { color: var(--sunday-color); }
 .day-header.sat { color: var(--saturday-color); }
 
+/* 날짜 칸 */
 .day-cell {
     min-height: 120px;
     border-right: 1px solid var(--border-color);
@@ -125,14 +147,12 @@ body {
     position: relative;
     cursor: pointer;
     background: white;
+    transition: background-color 0.2s;
 }
 .day-cell:hover { background-color: #fafafa; }
+.day-cell.empty { background-color: #fcfcfc; cursor: default; }
 
-/* 휴일 표시 */
-.day-cell.holiday .date-num { color: var(--sunday-color) !important; font-weight: bold; }
-.day-cell.sun .date-num { color: var(--sunday-color); }
-.day-cell.sat .date-num { color: var(--saturday-color); }
-
+/* 날짜 숫자 */
 .date-num {
     font-size: 0.9rem;
     margin-bottom: 5px;
@@ -144,7 +164,12 @@ body {
     border-radius: 50%;
 }
 
-/* 근무 바 (스케줄) */
+/* 휴일 숫자 스타일 */
+.day-cell.holiday .date-num { color: var(--sunday-color) !important; font-weight: bold; }
+.day-cell.sun .date-num { color: var(--sunday-color); }
+.day-cell.sat .date-num { color: var(--saturday-color); }
+
+/* 근무 바 (스케줄 띠) */
 .shift-bar {
     font-size: 0.75rem;
     color: white;
@@ -155,7 +180,8 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
-    transition: transform 0.1s;
+    transition: transform 0.1s, box-shadow 0.1s;
+    font-weight: 500;
 }
 .shift-bar:hover {
     transform: scale(1.02);
@@ -163,51 +189,71 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* --- 오른쪽: 사이드바 (직원목록) --- */
+/* --- 오른쪽: 사이드바 섹션 --- */
 .sidebar-section {
-    flex: 1;
+    flex: 1; /* 공간을 1만큼 차지 */
     min-width: 250px;
     border-left: 1px solid #eee;
     padding-left: 20px;
 }
-.sidebar-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
-.employee-list { list-style: none; padding: 0; }
+
+.sidebar-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.employee-list {
+    list-style: none;
+    padding: 0;
+}
+
 .employee-item {
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 8px;
     border-radius: 8px;
     color: white;
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    transition: opacity 0.3s;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.employee-item:hover { opacity: 0.8; }
-
+.employee-item:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
 
 /* =========================================
-   3. 모달 (팝업) 공통 스타일
+   4. 모달 (팝업창) 공통 스타일
    ========================================= */
 .modal {
-    display: none;
+    display: none; /* 기본 숨김 */
     position: fixed;
-    z-index: 1000;
+    z-index: 1000; /* 제일 위에 뜨게 */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.5); /* 반투명 검정 배경 */
+    backdrop-filter: blur(2px); /* 배경 흐림 효과 */
 }
 
 .modal-content {
     background-color: white;
     margin: 5% auto;
     padding: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     width: 90%;
-    max-width: 450px;
+    max-width: 480px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     position: relative;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .close-btn {
@@ -218,14 +264,17 @@ body {
     font-weight: bold;
     cursor: pointer;
     color: #aaa;
+    transition: color 0.2s;
 }
 .close-btn:hover { color: #333; }
 
-
 /* =========================================
-   4. 입력 폼 스타일 (근무입력, 환경설정 등)
+   5. 입력 폼 (Form) 스타일
    ========================================= */
-.form-group { margin-bottom: 15px; }
+.form-group {
+    margin-bottom: 15px;
+}
+
 .form-group label {
     display: block;
     margin-bottom: 8px;
@@ -234,32 +283,48 @@ body {
     font-size: 0.95rem;
 }
 
-select, input[type="text"], input[type="date"], input[type="password"], textarea {
+/* 모든 입력 필드 통일 */
+select, input[type="text"], input[type="date"], input[type="password"], input[type="color"], textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: var(--input-bg);
     font-size: 1rem;
     outline: none;
     transition: border-color 0.2s, background-color 0.2s;
     font-family: 'Noto Sans KR', sans-serif;
 }
+
 select:focus, input:focus, textarea:focus {
     border-color: var(--primary-color);
     background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
-input[readonly] { background-color: #eee; color: #777; cursor: not-allowed; }
-textarea { resize: vertical; }
 
+/* 읽기 전용 필드 */
+input[readonly] {
+    background-color: #eee;
+    color: #777;
+    cursor: not-allowed;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* 시간 선택 (시/분) 가로 배치 */
 .time-select-row {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-.time-select-row select { width: 48%; }
+.time-select-row select {
+    width: 48%; /* 반반 차지 */
+}
 
-/* 체크박스 */
+/* 체크박스 영역 */
 .checkbox-wrapper {
     display: flex;
     align-items: center;
@@ -267,42 +332,51 @@ textarea { resize: vertical; }
     padding-top: 15px;
     border-top: 1px dashed #eee;
 }
-input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-right: 8px; }
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-right: 8px;
+}
 
-/* 버튼 그룹 */
-.btn-group { display: flex; gap: 10px; margin-top: 20px; }
+/* 버튼 그룹 (저장/삭제) */
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
 
-/* 저장/삭제 버튼 */
 .btn-save {
     flex: 1;
     padding: 15px;
     background-color: var(--success-color);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 .btn-save:hover { background-color: #4cae4c; }
 
 .btn-delete {
-    width: 50px;
+    width: 60px;
     background-color: var(--danger-color);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.2s;
 }
 .btn-delete:hover { background-color: #c0392b; }
 
-
 /* =========================================
-   5. 통계 모달 전용 스타일
+   6. 통계 모달 스타일
    ========================================= */
 .stats-table {
     width: 100%;
@@ -310,16 +384,22 @@ input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-righ
     font-size: 0.95rem;
     margin-top: 5px;
 }
+
 .stats-table th {
     background-color: #f1f3f5;
-    position: sticky; top: 0; z-index: 1;
-    font-weight: bold; color: #444;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    font-weight: bold;
+    color: #444;
 }
+
 .stats-table th, .stats-table td {
     padding: 12px;
     text-align: center;
     border-bottom: 1px solid #eee;
 }
+
 .stats-footer {
     background-color: #fafafa;
     padding: 20px;
@@ -327,6 +407,7 @@ input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-righ
     border-radius: 8px;
     border: 1px solid #eee;
 }
+
 .summary-row {
     display: flex;
     justify-content: space-between;
@@ -334,103 +415,111 @@ input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-righ
     font-size: 1rem;
     color: #555;
 }
+
 .summary-row.total {
     font-size: 1.3rem;
     font-weight: bold;
     color: #333;
     margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
 }
-
 
 /* =========================================
-   6. 환경설정 (직원 관리 리스트)
+   7. 환경설정 (직원 관리 리스트) 스타일
    ========================================= */
 .emp-manage-list {
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: auto;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 10px;
-    margin-bottom: 10px;
-    background: #fff;
+    margin-bottom: 15px;
+    background: white;
 }
+
 .emp-manage-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
 }
-.emp-manage-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.emp-manage-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
 
-.emp-add-row { display: flex; gap: 10px; }
+.emp-add-row {
+    display: flex;
+    gap: 10px;
+}
+
 .btn-sm-del {
-    background: #ff6b6b;
+    background: var(--sunday-color);
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 5px 10px;
+    padding: 5px 12px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 .btn-sm-del:hover { background: #e74c3c; }
-/* style.css 맨 아래에 추가 */
 
 /* =========================================
-   🚨 모바일 반응형 스타일 (화면 폭 768px 이하)
+   🚨 8. 모바일 반응형 (화면 폭 768px 이하)
    ========================================= */
 @media screen and (max-width: 768px) {
     body {
-        padding: 10px; /* 모바일에서 여백 줄임 */
+        padding: 10px;
     }
 
-    /* 메인 타이틀 크기 줄임 */
+    /* 타이틀 크기 조정 */
     #main-title {
         font-size: 1.5rem;
     }
+    
+    /* 환경설정 버튼 글자 숨기고 아이콘만 보일 수도 있지만 일단 유지 */
+    .btn-settings {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
 
-    /* 메인 컨테이너: 세로 배치로 변경 */
+    /* 메인 컨테이너 세로 배치 */
     .main-container {
-        flex-direction: column; /* 옆으로 나란히 -> 위아래로 */
+        flex-direction: column;
         padding: 10px;
         gap: 15px;
     }
 
-    /* 달력과 사이드바 너비를 100%로 */
-    .calendar-section, .sidebar-section {
+    /* 달력과 사이드바 너비 100% */
+    .calendar-section, 
+    .sidebar-section {
         width: 100%;
-        flex: none; /* flex 비율 해제 */
+        flex: none;
     }
 
-    /* 사이드바 스타일 조정 */
+    /* 사이드바 위치 조정 */
     .sidebar-section {
         border-left: none;
-        border-top: 1px solid #eee; /* 위쪽에 경계선 */
+        border-top: 2px solid #eee;
         padding-left: 0;
         padding-top: 20px;
-        min-width: auto;
     }
 
-    /* 달력 헤더 (버튼과 년월) 크기 조정 */
-    .header {
-        margin-bottom: 10px;
-    }
-    .year-month {
-        font-size: 1.2rem;
-    }
-    .btn-nav {
-        padding: 6px 10px;
-        font-size: 0.85rem;
-    }
+    /* 달력 헤더 작게 */
+    .header { margin-bottom: 10px; }
+    .year-month { font-size: 1.3rem; }
+    .btn-nav { padding: 6px 10px; font-size: 0.85rem; }
 
-    /* 달력 셀 높이 줄임 (화면에 더 많이 보이게) */
+    /* 달력 셀 최적화 */
     .day-cell {
-        min-height: 80px; 
+        min-height: 80px; /* 높이 줄임 */
         padding: 2px;
     }
-
-    /* 날짜 숫자 크기 줄임 */
+    
     .date-num {
         font-size: 0.8rem;
         width: 20px;
@@ -438,35 +527,26 @@ input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-righ
         line-height: 20px;
     }
 
-    /* 근무 바(스케줄) 크기 줄임 */
     .shift-bar {
-        font-size: 0.65rem; /* 글자 크기 축소 */
+        font-size: 0.7rem;
         padding: 2px 4px;
         margin-bottom: 1px;
-        border-radius: 2px;
     }
-
-    /* 요일 헤더 폰트 줄임 */
+    
     .day-header {
         padding: 5px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
-    /* 모달 창 크기 조정 */
+    /* 모달 창 꽉 차게 */
     .modal-content {
-        width: 95%; /* 모바일에서 더 넓게 */
+        width: 95%;
         margin: 10% auto;
         padding: 20px;
     }
 
-    /* 폼 입력 요소 폰트 크기 최적화 (iOS 확대 방지) */
-    select, input[type="text"], input[type="date"], input[type="password"], textarea {
-        font-size: 16px; /* 16px 미만이면 아이폰에서 확대됨 */
-        padding: 10px;
-    }
-    
-    /* 시간 선택 박스 유연하게 */
-    .time-select-row select {
-        width: 45%;
+    /* 폰트 크기 최적화 (가독성) */
+    select, input, textarea, label, .btn-save {
+        font-size: 16px; /* 모바일 입력 확대 방지 */
     }
 }
