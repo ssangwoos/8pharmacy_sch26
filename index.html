@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>약국 근무 스케줄 관리</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <h1 id="main-title">로딩중... 🗓️</h1>
+        <button class="btn-settings" onclick="openPasswordModal()">⚙️ 환경설정</button>
+    </header>
+
+    <div class="main-container">
+        <section class="calendar-section">
+            <div class="header">
+                <button class="btn-nav" id="prev-month">&lt; 이전 달</button>
+                <div class="year-month" id="current-month"></div>
+                <button class="btn-nav" id="next-month">다음 달 &gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendar"></div>
+        </section>
+
+        <aside class="sidebar-section">
+            <button class="btn-nav" style="width:100%; margin-bottom: 20px;" onclick="openStatsModal()">📊 통계 보기</button>
+            <div class="sidebar-title">직원 명단</div>
+            <ul class="employee-list" id="employee-list"></ul>
+        </aside>
+    </div>
+
+    <div id="shift-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title" style="margin-bottom: 20px; font-size: 1.3rem;">근무 기록 추가</h2>
+            <div class="form-group">
+                <label>날짜</label>
+                <input type="text" id="modal-date-display" readonly>
+            </div>
+            <div class="form-group">
+                <label>이름</label>
+                <select id="modal-emp-select" style="width: 100%;"><option value="">선택하세요</option></select>
+            </div>
+            <div class="form-group">
+                <label>근무유형</label>
+                <select id="modal-shift-type" onchange="toggleInputs()" style="width: 100%;">
+                    <option value="주간">주간</option>
+                    <option value="야간">야간</option>
+                    <option value="휴무">휴무</option>
+                    <option value="휴가">휴가</option>
+                </select>
+            </div>
+            <div id="time-input-section">
+                <div class="form-group">
+                    <label>출근시간</label>
+                    <div class="time-select-row">
+                        <select id="start-hour"></select> 시 <select id="start-min"></select> 분 
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>퇴근시간</label>
+                    <div class="time-select-row">
+                        <select id="end-hour"></select> 시 <select id="end-min"></select> 분
+                    </div>
+                </div>
+            </div>
+            <div id="date-range-section" class="form-group" style="display: none;">
+                <label>종료일</label>
+                <input type="date" id="end-date">
+            </div>
+            <div class="form-group">
+                <label>비고</label>
+                <textarea id="modal-memo" rows="3" placeholder="특이사항"></textarea>
+            </div>
+            <div class="form-group checkbox-wrapper" id="repeat-section">
+                <input type="checkbox" id="repeat-check">
+                <label for="repeat-check" style="display:inline; font-weight:normal; margin-left:5px; cursor:pointer;">이 달의 같은 요일에 반복 적용 📅</label>
+            </div>
+            <div class="btn-group">
+                <button class="btn-save" onclick="saveSchedule()">저장</button>
+                <button class="btn-delete" id="btn-delete" onclick="deleteSchedule()" style="display:none;">🗑️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="stats-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn" onclick="closeStatsModal()">&times;</span>
+            <h2>📊 월간 근무 상세 조회</h2>
+            <p id="stats-period" style="color: #666; margin-bottom: 10px;"></p>
+            <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                <label for="stats-emp-select">조회할 직원을 선택하세요:</label>
+                <select id="stats-emp-select" style="width: 100%; font-weight:bold;" onchange="updateStatsTable()"></select>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid #eee;">
+                <table class="stats-table">
+                    <thead><tr><th>날짜</th><th>구분</th><th>근무 시간</th><th>인정 시간</th></tr></thead>
+                    <tbody id="stats-body"></tbody>
+                </table>
+            </div>
+            <div class="stats-footer">
+                <div class="summary-row"><span>☀️ 주간 합계:</span> <span id="sum-day">0시간</span></div>
+                <div class="summary-row"><span>🌙 야간 합계:</span> <span id="sum-night">0시간</span></div>
+                <hr style="margin: 10px 0; border-top: 1px dashed #ccc;">
+                <div class="summary-row total"><span>💰 총 근무 시간:</span> <span id="sum-total" style="color: #4a90e2;">0시간</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="password-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-btn" onclick="closePasswordModal()">&times;</span>
+            <h2>🔒 관리자 인증</h2>
+            <input type="password" id="admin-pw-input" placeholder="비밀번호 입력" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; margin-top: 20px;">
+            <button class="btn-save" style="margin-top: 20px;" onclick="checkPassword()">확인</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
+            <h2>⚙️ 환경설정</h2>
+            <div class="form-group">
+                <label>약국 이름</label>
+                <input type="text" id="set-pharmacy-name">
+            </div>
+            <div class="form-group">
+                <label>관리자 비밀번호 변경</label>
+                <input type="text" id="set-admin-pw" placeholder="변경할 비밀번호">
+            </div>
+            <hr style="margin: 20px 0;">
+            <h3>직원 관리</h3>
+            <div id="settings-emp-list" class="emp-manage-list"></div>
+            <div class="emp-add-row" style="margin-top:10px;">
+                <input type="color" id="new-emp-color" value="#4a90e2" style="width: 40px; padding: 2px; height: 40px;">
+                <input type="text" id="new-emp-name" placeholder="새 직원 이름" style="flex: 1;">
+                <button class="btn-nav" onclick="addEmployee()">추가</button>
+            </div>
+            <button class="btn-save" style="margin-top: 20px;" onclick="saveSettings()">설정 저장하기</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
