@@ -12,7 +12,9 @@ const firebaseConfig = {
   appId: "1:1028219799154:web:669dc1a10e7a1f5f8f64eb"
 };
 
+// script.js (통계 리포트 기능 + 모바일 + 색상 수정 완료 버전)
 
+// =========================================================
 
 // --- 파이어베이스 초기화 ---
 firebase.initializeApp(firebaseConfig);
@@ -113,57 +115,35 @@ function renderEmployees() {
     });
 }
 
-// script.js 안에 있는 renderCalendar 함수만 이걸로 교체하세요
-
 function renderCalendar() {
     calendarGrid.innerHTML = `
-        <div class="day-header sun">일</div>
-        <div class="day-header">월</div>
-        <div class="day-header">화</div>
-        <div class="day-header">수</div>
-        <div class="day-header">목</div>
-        <div class="day-header">금</div>
-        <div class="day-header sat">토</div>
+        <div class="day-header sun">일</div><div class="day-header">월</div><div class="day-header">화</div><div class="day-header">수</div><div class="day-header">목</div><div class="day-header">금</div><div class="day-header sat">토</div>
     `;
-
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     currentMonthDisplay.innerText = `${year}년 ${month + 1}월`;
-
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
 
-    // 1. 빈 칸 채우기
     for (let i = 0; i < firstDay; i++) {
-        const div = document.createElement('div');
-        div.className = 'day-cell empty';
-        calendarGrid.appendChild(div);
+        const div = document.createElement('div'); div.className = 'day-cell empty'; calendarGrid.appendChild(div);
     }
 
-    // 2. 날짜 채우기
     for (let i = 1; i <= lastDate; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'day-cell';
-        
-        const dateNum = document.createElement('div');
-        dateNum.className = 'date-num';
-        dateNum.innerText = i;
+        const cell = document.createElement('div'); cell.className = 'day-cell';
+        const dateNum = document.createElement('div'); dateNum.className = 'date-num'; dateNum.innerText = i;
         dateNum.onclick = (e) => { e.stopPropagation(); cell.classList.toggle('holiday'); };
         cell.appendChild(dateNum);
-
+        
         const dayOfWeek = new Date(year, month, i).getDay();
-        if(dayOfWeek === 0) cell.classList.add('sun');
-        if(dayOfWeek === 6) cell.classList.add('sat');
-
+        if(dayOfWeek === 0) cell.classList.add('sun'); if(dayOfWeek === 6) cell.classList.add('sat');
+        
         const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-        cell.onclick = (e) => {
-            if(e.target === cell || e.target === dateNum) openAddModal(dateKey);
-        };
+        cell.onclick = (e) => { if(e.target === cell || e.target === dateNum) openAddModal(dateKey); };
 
         let todaysSchedules = schedules.filter(s => s.date === dateKey);
         todaysSchedules.sort((a, b) => {
-            if (!a.startTime) return -1; 
-            if (!b.startTime) return 1;
+            if (!a.startTime) return -1; if (!b.startTime) return 1;
             return a.startTime.localeCompare(b.startTime);
         });
 
@@ -172,28 +152,18 @@ function renderCalendar() {
             if(emp) {
                 const bar = document.createElement('div');
                 bar.className = 'shift-bar';
-                
-                // ★★★ 여기가 핵심 수정 포인트입니다 ★★★
-                // 1. 색상은 무조건 직원의 색상을 따릅니다. (강제 지정 코드 삭제됨)
                 bar.style.backgroundColor = emp.color; 
-                
-                bar.dataset.empId = emp.id;
+                bar.dataset.empId = emp.id; 
                 if(sch.memo) bar.title = sch.memo; 
 
-                // 2. 텍스트 내용만 구분합니다.
-                if(sch.type === '휴무') {
-                    bar.innerText = `[휴무] ${emp.name}`;
-                } else if(sch.type === '휴가') {
-                    bar.innerText = `[휴가] ${emp.name}`;
-                } else {
-                    bar.innerText = `${emp.name} (${sch.startTime}~${sch.endTime})`;
-                }
-
+                if(sch.type === '휴무') bar.innerText = `[휴무] ${emp.name}`;
+                else if(sch.type === '휴가') bar.innerText = `[휴가] ${emp.name}`;
+                else bar.innerText = `${emp.name} (${sch.startTime}~${sch.endTime})`;
+                
                 bar.onclick = (e) => { e.stopPropagation(); openEditModal(sch); };
                 cell.appendChild(bar);
             }
         });
-
         calendarGrid.appendChild(cell);
     }
     if(activeEmployeeId) highlightEmployee(activeEmployeeId);
@@ -263,13 +233,15 @@ function saveSchedule() {
         if (type === '휴가') {
             let sDate = new Date(selectedDate); const eDate = new Date(document.getElementById('end-date').value);
             while(sDate <= eDate) {
-                batch.set(db.collection('schedules').doc(), { date: sDate.toISOString().split('T')[0], empId, type, startTime: null, endTime: null, memo });
+                const ref = db.collection('schedules').doc();
+                batch.set(ref, { date: sDate.toISOString().split('T')[0], empId, type, startTime: null, endTime: null, memo });
                 sDate.setDate(sDate.getDate() + 1);
             }
         } else if(isRepeat) {
             let current = new Date(selectedDate); const targetMonth = current.getMonth();
             while(current.getMonth() === targetMonth) {
-                batch.set(db.collection('schedules').doc(), { date: current.toISOString().split('T')[0], empId, type, startTime: sTime, endTime: eTime, memo });
+                const ref = db.collection('schedules').doc();
+                batch.set(ref, { date: current.toISOString().split('T')[0], empId, type, startTime: sTime, endTime: eTime, memo });
                 current.setDate(current.getDate() + 7);
             }
             alert("반복 등록 완료.");
@@ -283,7 +255,7 @@ function saveSchedule() {
 function deleteSchedule() { if(confirm("삭제?")) { db.collection('schedules').doc(editingScheduleId).delete(); closeModal(); }}
 
 // ---------------------------
-// 환경설정 & 통계 & 기타
+// 환경설정 (DB)
 // ---------------------------
 function openPasswordModal() { document.getElementById('admin-pw-input').value = ""; pwModal.style.display = 'block'; document.getElementById('admin-pw-input').focus(); }
 function closePasswordModal() { pwModal.style.display = 'none'; }
@@ -317,44 +289,153 @@ function saveSettings() {
     .then(() => { alert("저장 완료!"); closeSettingsModal(); });
 }
 
+// ---------------------------
+// 📊 통계 리포트 기능 (여기가 안됐던 부분!)
+// ---------------------------
 function openStatsModal() {
-    const Y=currentDate.getFullYear(), M=currentDate.getMonth(); document.getElementById('stats-period').innerText = `기준: ${Y}년 ${M+1}월`;
-    const sel = document.getElementById('stats-emp-select'); sel.innerHTML = '<option value="">-- 선택 --</option>';
-    employees.forEach(e => sel.innerHTML += `<option value="${e.id}">${e.name}</option>`);
-    document.getElementById('stats-body').innerHTML = '<tr><td colspan="4" style="text-align:center;">직원을 선택해주세요.</td></tr>';
-    resetSums(); statsModal.style.display = 'block';
-}
-function closeStatsModal() { statsModal.style.display = 'none'; }
-function resetSums() { document.getElementById('sum-day').innerText="0시간"; document.getElementById('sum-night').innerText="0시간"; document.getElementById('sum-total').innerText="0시간"; }
-function updateStatsTable() {
-    const empId = document.getElementById('stats-emp-select').value; if(!empId) return;
-    const Y=currentDate.getFullYear(), M=currentDate.getMonth();
-    let mySch = schedules.filter(s => { const d=new Date(s.date); return d.getFullYear()===Y && d.getMonth()===M && s.empId==empId; });
-    mySch.sort((a,b)=>new Date(a.date)-new Date(b.date));
-    const tbody = document.getElementById('stats-body'); tbody.innerHTML = "";
-    let tDay=0, tNight=0;
-    if(mySch.length===0) { tbody.innerHTML='<tr><td colspan="4" style="text-align:center;">기록 없음</td></tr>'; resetSums(); return; }
-    mySch.forEach(sch => {
-        const tr = document.createElement('tr'); const d=new Date(sch.date);
-        let typeStr=sch.type, timeStr="-", durStr="-";
-        if(sch.type==='주간'||sch.type==='야간') {
-            if(sch.startTime){
-                timeStr=`${sch.startTime}~${sch.endTime}`;
-                const diff = (parseInt(sch.endTime.split(':')[0])*60+parseInt(sch.endTime.split(':')[1])) - (parseInt(sch.startTime.split(':')[0])*60+parseInt(sch.startTime.split(':')[1]));
-                durStr = `${(diff/60).toFixed(1).replace('.0','')}시간`;
-                if(sch.type==='주간') tDay+=diff; else tNight+=diff;
-            }
-        } else if(sch.type==='휴가') typeStr='<span style="color:#e74c3c">휴가</span>'; else typeStr='<span style="color:#aaa">휴무</span>';
-        tr.innerHTML = `<td>${d.getMonth()+1}/${d.getDate()}</td><td style="font-weight:bold;">${typeStr}</td><td style="color:#555;">${timeStr}</td><td style="color:#2980b9;font-weight:bold;">${durStr}</td>`;
-        tbody.appendChild(tr);
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    document.getElementById('stats-period').innerText = `${year}년 ${month + 1}월 통계`;
+    
+    const select = document.getElementById('stats-emp-select');
+    select.innerHTML = '<option value="">-- 직원을 선택해주세요 --</option>';
+    employees.forEach(emp => {
+        const opt = document.createElement('option');
+        opt.value = emp.id;
+        opt.textContent = emp.name;
+        select.appendChild(opt);
     });
-    document.getElementById('sum-day').innerText = `${(tDay/60).toFixed(1).replace('.0','')}시간`;
-    document.getElementById('sum-night').innerText = `${(tNight/60).toFixed(1).replace('.0','')}시간`;
-    document.getElementById('sum-total').innerText = `${((tDay+tNight)/60).toFixed(1).replace('.0','')}시간`;
+
+    document.getElementById('stats-body').innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">직원을 선택하면 상세 리포트가 표시됩니다.</td></tr>';
+    document.getElementById('stats-report-summary').style.display = 'none';
+
+    statsModal.style.display = 'block';
 }
 
-function highlightEmployee(id) { document.querySelectorAll('.shift-bar').forEach(b => b.style.opacity = (b.dataset.empId == id) ? '1' : '0.1'); }
-function resetHighlights() { document.querySelectorAll('.shift-bar').forEach(b => b.style.opacity = '1'); }
+function closeStatsModal() { statsModal.style.display = 'none'; }
+
+function updateStatsTable() {
+    const empId = document.getElementById('stats-emp-select').value;
+    if(!empId) return;
+
+    const empName = employees.find(e => e.id == empId)?.name || "직원";
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    let mySchedules = schedules.filter(s => {
+        const d = new Date(s.date);
+        return d.getFullYear() === year && d.getMonth() === month && s.empId == empId;
+    });
+
+    mySchedules.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const tbody = document.getElementById('stats-body');
+    const summaryDiv = document.getElementById('stats-report-summary');
+    tbody.innerHTML = "";
+
+    let totalDayMin = 0;   
+    let totalNightMin = 0; 
+    let vacationDays = 0;  
+    let offDays = 0;       
+
+    if(mySchedules.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">이번 달 근무 기록이 없습니다.</td></tr>';
+        summaryDiv.style.display = 'none';
+        return;
+    }
+
+    const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+    mySchedules.forEach(sch => {
+        const tr = document.createElement('tr');
+        const dateObj = new Date(sch.date);
+        const dateStr = `${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
+        
+        const dayIdx = dateObj.getDay();
+        const dayStr = dayNames[dayIdx];
+        let dayClass = "stats-day";
+        if (dayIdx === 0) dayClass += " sun"; 
+        if (dayIdx === 6) dayClass += " sat"; 
+
+        let typeStr = sch.type;
+        let startStr = "-";
+        let endStr = "-";
+        let hoursStr = "-";
+        let memoStr = sch.memo || "";
+
+        if(sch.type === '주간' || sch.type === '야간') {
+            if(sch.startTime && sch.endTime) {
+                startStr = sch.startTime;
+                endStr = sch.endTime;
+                
+                const diffMin = getMinutesDiff(sch.startTime, sch.endTime); // ★ 여기에 함수 필요
+                const h = (diffMin / 60).toFixed(1);
+                hoursStr = h.endsWith('.0') ? parseInt(h) : h;
+
+                if(sch.type === '주간') totalDayMin += diffMin;
+                else totalNightMin += diffMin;
+            }
+        } else if (sch.type === '휴가') {
+            typeStr = "휴가";
+            vacationDays++;
+        } else {
+            typeStr = "휴무";
+            offDays++;
+        }
+
+        tr.innerHTML = `
+            <td>${dateStr}</td>
+            <td class="${dayClass}">${dayStr}</td>
+            <td>${typeStr}</td>
+            <td>${startStr}</td>
+            <td>${endStr}</td>
+            <td style="font-weight:bold;">${hoursStr}</td>
+            <td style="font-size:0.85rem; color:#888;">${memoStr}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    const totalDayHours = (totalDayMin / 60);
+    const totalNightHours = (totalNightMin / 60);
+    const grandTotal = totalDayHours + totalNightHours;
+    const fmt = (n) => Number.isInteger(n) ? n : n.toFixed(1);
+
+    summaryDiv.innerHTML = `
+        <h3>📝 ${empName}님 근무 형태별 합계:</h3>
+        <ul>
+            <li>- 주간: <b>${fmt(totalDayHours)}</b> 시간</li>
+            <li>- 야간: <b>${fmt(totalNightHours)}</b> 시간</li>
+            <li>- 휴가: <b>${vacationDays}</b> 일</li>
+            <li>- 휴무: <b>${offDays}</b> 일</li>
+        </ul>
+        <div class="report-total">
+            💵 총 근무시간 (휴가/휴무 제외): ${fmt(grandTotal)} 시간
+        </div>
+    `;
+    summaryDiv.style.display = 'block';
+}
+
+// ★ 누락되었던 헬퍼 함수 (시간 계산용)
+function getMinutesDiff(startStr, endStr) {
+    if(!startStr || !endStr) return 0;
+    const [sh, sm] = startStr.split(':').map(Number);
+    const [eh, em] = endStr.split(':').map(Number);
+    return (eh * 60 + em) - (sh * 60 + sm);
+}
+
+// 기타 이벤트
+function highlightEmployee(empId) {
+    document.querySelectorAll('.shift-bar').forEach(bar => {
+        bar.style.opacity = (bar.dataset.empId == empId) ? '1' : '0.1';
+    });
+}
+function resetHighlights() { document.querySelectorAll('.shift-bar').forEach(bar => bar.style.opacity = '1'); }
 document.getElementById('prev-month').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
 document.getElementById('next-month').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
-window.onclick = (e) => { if(e.target==shiftModal)closeModal(); if(e.target==statsModal)closeStatsModal(); if(e.target==pwModal)closePasswordModal(); if(e.target==settingsModal)closeSettingsModal(); }
+window.onclick = function(e) { 
+    if (e.target == shiftModal) closeModal();
+    if (e.target == statsModal) closeStatsModal();
+    if (e.target == pwModal) closePasswordModal();
+    if (e.target == settingsModal) closeSettingsModal();
+}

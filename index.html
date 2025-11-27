@@ -89,26 +89,36 @@
     </div>
 
     <div id="stats-modal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content">
             <span class="close-btn" onclick="closeStatsModal()">&times;</span>
-            <h2>📊 월간 근무 상세 조회</h2>
-            <p id="stats-period" style="color: #666; margin-bottom: 10px;"></p>
-            <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                <label for="stats-emp-select">조회할 직원을 선택하세요:</label>
-                <select id="stats-emp-select" style="width: 100%; font-weight:bold;" onchange="updateStatsTable()"></select>
+            <h2 style="margin-bottom:5px;">월간 근무 통계 📈</h2>
+            <p id="stats-period" style="color: #666; margin-bottom: 20px; font-weight:bold; font-size:1.1rem; text-align:right;"></p>
+            
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                <label for="stats-emp-select" style="font-weight:bold;">직원 선택:</label>
+                <select id="stats-emp-select" style="width: 200px; padding:8px;" onchange="updateStatsTable()"></select>
             </div>
-            <div style="max-height: 300px; overflow-y: auto; margin-top: 15px; border: 1px solid #eee;">
+
+            <div id="stats-table-container">
                 <table class="stats-table">
-                    <thead><tr><th>날짜</th><th>구분</th><th>근무 시간</th><th>인정 시간</th></tr></thead>
-                    <tbody id="stats-body"></tbody>
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>요일</th>
+                            <th>근무형태</th>
+                            <th>출근</th>
+                            <th>퇴근</th>
+                            <th>근무시간(H)</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stats-body">
+                        </tbody>
                 </table>
             </div>
-            <div class="stats-footer">
-                <div class="summary-row"><span>☀️ 주간 합계:</span> <span id="sum-day">0시간</span></div>
-                <div class="summary-row"><span>🌙 야간 합계:</span> <span id="sum-night">0시간</span></div>
-                <hr style="margin: 10px 0; border-top: 1px dashed #ccc;">
-                <div class="summary-row total"><span>💰 총 근무 시간:</span> <span id="sum-total" style="color: #4a90e2;">0시간</span></div>
-            </div>
+
+            <div id="stats-report-summary" class="report-summary" style="display:none;">
+                </div>
         </div>
     </div>
 
