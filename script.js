@@ -12,9 +12,7 @@ const firebaseConfig = {
   appId: "1:1028219799154:web:669dc1a10e7a1f5f8f64eb"
 };
 
-// script.js (통계 리포트 기능 + 모바일 + 색상 수정 완료 버전)
 
-// =========================================================
 
 // --- 파이어베이스 초기화 ---
 firebase.initializeApp(firebaseConfig);
@@ -25,6 +23,7 @@ const SUPER_PW = "dpdlxmqbxl1*";
 let config = { pharmacyName: "로딩중...", password: "0000" };
 let employees = [];
 let schedules = [];
+let specialDays = []; // ★ 추가된 변수: 빨간날 저장용
 
 let currentDate = new Date();
 let activeEmployeeId = null;
@@ -51,6 +50,7 @@ listenToData();
 // 파이어베이스 실시간 리스너
 // ==========================================
 function listenToData() {
+    // 1. 환경설정
     db.collection('settings').doc('config').onSnapshot((doc) => {
         if (doc.exists) { config = doc.data(); }
         else {
@@ -60,6 +60,7 @@ function listenToData() {
         updateTitle();
     });
 
+    // 2. 직원 목록
     db.collection('employees').onSnapshot((snapshot) => {
         employees = [];
         snapshot.forEach((doc) => { employees.push({ id: doc.id, ...doc.data() }); });
@@ -69,10 +70,20 @@ function listenToData() {
         renderCalendar();
     });
 
+    // 3. 스케줄
     db.collection('schedules').onSnapshot((snapshot) => {
         schedules = [];
         snapshot.forEach((doc) => { schedules.push({ id: doc.id, ...doc.data() }); });
         renderCalendar();
+    });
+
+    // ★ 4. 빨간날(휴일) 목록 듣기 (추가됨)
+    db.collection('specialDays').onSnapshot((snapshot) => {
+        specialDays = [];
+        snapshot.forEach((doc) => {
+            specialDays.push(doc.id); // 문서 ID 자체가 날짜(YYYY-MM-DD)
+        });
+        renderCalendar(); // 목록 바뀌면 달력 다시 그림
     });
 }
 
@@ -131,14 +142,28 @@ function renderCalendar() {
 
     for (let i = 1; i <= lastDate; i++) {
         const cell = document.createElement('div'); cell.className = 'day-cell';
-        const dateNum = document.createElement('div'); dateNum.className = 'date-num'; dateNum.innerText = i;
-        dateNum.onclick = (e) => { e.stopPropagation(); cell.classList.toggle('holiday'); };
+        const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+        
+        // ★ 빨간날 체크 로직 추가
+        if (specialDays.includes(dateKey)) {
+            cell.classList.add('holiday');
+        }
+
+        const dateNum = document.createElement('div'); 
+        dateNum.className = 'date-num'; 
+        dateNum.innerText = i;
+        
+        // ★ 클릭 시 DB 토글 함수 호출로 변경
+        dateNum.onclick = (e) => { 
+            e.stopPropagation(); 
+            toggleHoliday(dateKey); 
+        };
+        
         cell.appendChild(dateNum);
         
         const dayOfWeek = new Date(year, month, i).getDay();
         if(dayOfWeek === 0) cell.classList.add('sun'); if(dayOfWeek === 6) cell.classList.add('sat');
         
-        const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         cell.onclick = (e) => { if(e.target === cell || e.target === dateNum) openAddModal(dateKey); };
 
         let todaysSchedules = schedules.filter(s => s.date === dateKey);
@@ -169,8 +194,19 @@ function renderCalendar() {
     if(activeEmployeeId) highlightEmployee(activeEmployeeId);
 }
 
+// ★ [신규 함수] 빨간날 토글 (DB 저장/삭제)
+function toggleHoliday(dateStr) {
+    if (specialDays.includes(dateStr)) {
+        // 이미 있으면 삭제 (검은날로 복귀)
+        db.collection('specialDays').doc(dateStr).delete();
+    } else {
+        // 없으면 추가 (빨간날로 지정)
+        db.collection('specialDays').doc(dateStr).set({ type: 'holiday' });
+    }
+}
+
 // ---------------------------
-// 모달 및 DB 저장 로직
+// 모달 및 DB 저장 로직 (기존 동일)
 // ---------------------------
 function openAddModal(dateStr) {
     editingScheduleId = null; selectedDate = dateStr;
@@ -233,15 +269,13 @@ function saveSchedule() {
         if (type === '휴가') {
             let sDate = new Date(selectedDate); const eDate = new Date(document.getElementById('end-date').value);
             while(sDate <= eDate) {
-                const ref = db.collection('schedules').doc();
-                batch.set(ref, { date: sDate.toISOString().split('T')[0], empId, type, startTime: null, endTime: null, memo });
+                batch.set(db.collection('schedules').doc(), { date: sDate.toISOString().split('T')[0], empId, type, startTime: null, endTime: null, memo });
                 sDate.setDate(sDate.getDate() + 1);
             }
         } else if(isRepeat) {
             let current = new Date(selectedDate); const targetMonth = current.getMonth();
             while(current.getMonth() === targetMonth) {
-                const ref = db.collection('schedules').doc();
-                batch.set(ref, { date: current.toISOString().split('T')[0], empId, type, startTime: sTime, endTime: eTime, memo });
+                batch.set(db.collection('schedules').doc(), { date: current.toISOString().split('T')[0], empId, type, startTime: sTime, endTime: eTime, memo });
                 current.setDate(current.getDate() + 7);
             }
             alert("반복 등록 완료.");
@@ -255,7 +289,7 @@ function saveSchedule() {
 function deleteSchedule() { if(confirm("삭제?")) { db.collection('schedules').doc(editingScheduleId).delete(); closeModal(); }}
 
 // ---------------------------
-// 환경설정 (DB)
+// 환경설정 & 통계 & 기타
 // ---------------------------
 function openPasswordModal() { document.getElementById('admin-pw-input').value = ""; pwModal.style.display = 'block'; document.getElementById('admin-pw-input').focus(); }
 function closePasswordModal() { pwModal.style.display = 'none'; }
@@ -289,9 +323,6 @@ function saveSettings() {
     .then(() => { alert("저장 완료!"); closeSettingsModal(); });
 }
 
-// ---------------------------
-// 📊 통계 리포트 기능 (여기가 안됐던 부분!)
-// ---------------------------
 function openStatsModal() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -369,7 +400,7 @@ function updateStatsTable() {
                 startStr = sch.startTime;
                 endStr = sch.endTime;
                 
-                const diffMin = getMinutesDiff(sch.startTime, sch.endTime); // ★ 여기에 함수 필요
+                const diffMin = getMinutesDiff(sch.startTime, sch.endTime);
                 const h = (diffMin / 60).toFixed(1);
                 hoursStr = h.endsWith('.0') ? parseInt(h) : h;
 
@@ -416,7 +447,6 @@ function updateStatsTable() {
     summaryDiv.style.display = 'block';
 }
 
-// ★ 누락되었던 헬퍼 함수 (시간 계산용)
 function getMinutesDiff(startStr, endStr) {
     if(!startStr || !endStr) return 0;
     const [sh, sm] = startStr.split(':').map(Number);
