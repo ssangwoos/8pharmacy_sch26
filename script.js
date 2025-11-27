@@ -246,7 +246,7 @@ function toggleInputs() {
     const val = document.getElementById('modal-shift-type').value;
     const timeSec = document.getElementById('time-input-section');
     const dateSec = document.getElementById('date-range-section');
-    timeSec.style.display = (val === '주간' || val === '야간') ? 'block' : 'none';
+    timeSec.style.display = (val === '주간' || val === '마감') ? 'block' : 'none';
     dateSec.style.display = (val === '휴가') ? 'block' : 'none';
 }
 
@@ -257,7 +257,7 @@ function saveSchedule() {
     const memo = document.getElementById('modal-memo').value; 
     const isRepeat = document.getElementById('repeat-check').checked;
     let sTime = null, eTime = null;
-    if(type === '주간' || type === '야간') {
+    if(type === '주간' || type === '마감') {
         sTime = `${document.getElementById('start-hour').value}:${document.getElementById('start-min').value}`;
         eTime = `${document.getElementById('end-hour').value}:${document.getElementById('end-min').value}`;
     }
@@ -395,7 +395,7 @@ function updateStatsTable() {
         let hoursStr = "-";
         let memoStr = sch.memo || "";
 
-        if(sch.type === '주간' || sch.type === '야간') {
+        if(sch.type === '주간' || sch.type === '마감') {
             if(sch.startTime && sch.endTime) {
                 startStr = sch.startTime;
                 endStr = sch.endTime;
@@ -436,7 +436,7 @@ function updateStatsTable() {
         <h3>📝 ${empName}님 근무 형태별 합계:</h3>
         <ul>
             <li>- 주간: <b>${fmt(totalDayHours)}</b> 시간</li>
-            <li>- 야간: <b>${fmt(totalNightHours)}</b> 시간</li>
+            <li>- 마감: <b>${fmt(totalNightHours)}</b> 시간</li>
             <li>- 휴가: <b>${vacationDays}</b> 일</li>
             <li>- 휴무: <b>${offDays}</b> 일</li>
         </ul>
