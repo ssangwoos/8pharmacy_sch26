@@ -147,10 +147,14 @@
             <h3>직원 관리</h3>
             <div id="settings-emp-list" class="emp-manage-list"></div>
             <div class="emp-add-row" style="margin-top:10px;">
-                <input type="color" id="new-emp-color" value="#4a90e2" style="width: 40px; padding: 2px; height: 40px;">
-                <input type="text" id="new-emp-name" placeholder="새 직원 이름" style="flex: 1;">
-                <button class="btn-nav" onclick="addEmployee()">추가</button>
-            </div>
+    
+    <div id="new-emp-color-div" onclick="openColorModal('new')" style="width:40px; height:40px; background-color:#4a90e2; border-radius:6px; cursor:pointer; border:1px solid #ddd; flex-shrink:0;"></div>
+
+    <input type="hidden" id="new-emp-color" value="#4a90e2">
+
+    <input type="text" id="new-emp-name" placeholder="새 직원 이름" style="flex: 1;">
+    <button class="btn-nav" onclick="addEmployee()">추가</button>
+            </div>  
             <button class="btn-save" style="margin-top: 20px;" onclick="saveSettings()">설정 저장하기</button>
         </div>
     </div>

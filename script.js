@@ -526,15 +526,19 @@ function closeColorModal() {
     colorModal.style.display = 'none';
 }
 
+// script.js 맨 아래 selectColor 함수 교체
+
 function selectColor(color) {
-    if (targetEmpId) {
-        // 직원 색상 업데이트
+    if (targetEmpId === 'new') {
+        // [신규] 직원 추가용 색상 선택일 때
+        // 1. 눈에 보이는 네모칸 색 바꾸기
+        document.getElementById('new-emp-color-div').style.backgroundColor = color;
+        // 2. 숨겨진 값(DB로 보낼 값) 바꾸기
+        document.getElementById('new-emp-color').value = color;
+    } else if (targetEmpId) {
+        // [기존] 직원 색상 변경일 때
         updateEmpColor(targetEmpId, color);
     }
+    
     closeColorModal();
 }
-
-// 모달 닫기 이벤트 (기존 window.onclick에 추가)
-window.addEventListener('click', (e) => {
-    if (e.target == colorModal) closeColorModal();
-});
