@@ -500,3 +500,22 @@ input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: p
     /* 폰트 크기 최적화 */
     select, input, textarea, label, .btn-save { font-size: 16px; }
 }
+
+/* --- 커스텀 색상 선택기 스타일 --- */
+.color-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 동그라미 모양 */
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.color-swatch:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.color-swatch.selected {
+    border: 2px solid #333; /* 선택된 색 테두리 */
+    transform: scale(1.1);
+}
