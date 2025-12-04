@@ -303,14 +303,32 @@ function openSettingsModal() {
 }
 function closeSettingsModal() { settingsModal.style.display = 'none'; }
 function renderSettingsEmployees() {
-    const listDiv = document.getElementById('settings-emp-list'); listDiv.innerHTML = "";
+    const listDiv = document.getElementById('settings-emp-list');
+    listDiv.innerHTML = "";
+    
     employees.forEach((emp) => {
-        const div = document.createElement('div'); div.className = 'emp-manage-item';
-        div.innerHTML = `<input type="color" value="${emp.color}" onchange="updateEmpColor('${emp.id}', this.value)" style="width:30px;height:30px;padding:0;border:none;"><span style="flex:1;font-weight:bold;">${emp.name}</span><button class="btn-sm-del" onclick="deleteEmployee('${emp.id}')">삭제</button>`;
+        const div = document.createElement('div');
+        div.className = 'emp-manage-item';
+        // 수정 포인트: 이름을 input text로 변경 + onchange 이벤트 추가
+        div.innerHTML = `
+            <input type="color" value="${emp.color}" onchange="updateEmpColor('${emp.id}', this.value)" style="width:40px; height:40px; border:none; background:none; cursor:pointer;">
+            <input type="text" value="${emp.name}" onchange="updateEmpName('${emp.id}', this.value)" style="flex:1; margin:0 10px; padding:5px; border:1px solid #ddd; border-radius:4px;">
+            <button class="btn-sm-del" onclick="deleteEmployee('${emp.id}')">삭제</button>
+        `;
         listDiv.appendChild(div);
     });
 }
 function updateEmpColor(id, color) { db.collection('employees').doc(id).update({ color }); }
+// script.js 의 updateEmpColor 함수 밑에 추가하세요.
+
+function updateEmpName(docId, newName) {
+    if(!newName.trim()) {
+        alert("이름을 비워둘 수 없습니다.");
+        renderSettingsEmployees(); // 원래대로 되돌림
+        return;
+    }
+    db.collection('employees').doc(docId).update({ name: newName });
+}
 function deleteEmployee(id) { if(confirm("삭제?")) db.collection('employees').doc(id).delete(); }
 function addEmployee() {
     const name = document.getElementById('new-emp-name').value.trim();

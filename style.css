@@ -472,6 +472,20 @@ input[type="checkbox"] {
    🚨 8. 모바일 반응형 (화면 폭 768px 이하)
    ========================================= */
 @media screen and (max-width: 768px) {
+    .modal {
+        align-items: center; /* 모달 중앙 정렬 */
+        display: flex;       /* flex로 변경하여 정렬 도움 */
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 0 auto;      /* 상하 여백 제거 (flex가 처리) */
+        max-height: 85vh;    /* 화면 높이의 85%까지만 차지 */
+        overflow-y: auto;    /* 내용이 넘치면 스크롤 생김 (핵심!) */
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
     body {
         padding: 10px;
     }
@@ -548,6 +562,23 @@ input[type="checkbox"] {
     /* 폰트 크기 최적화 (가독성) */
     select, input, textarea, label, .btn-save {
         font-size: 16px; /* 모바일 입력 확대 방지 */
+    }
+    input[type="color"] {
+        height: 40px;       /* 높이를 키워서 터치 쉽게 */
+        width: 100%;        /* 너비도 시원하게 */
+        padding: 2px;
+        border-radius: 4px;
+        background: none;
+        -webkit-appearance: none; /* 아이폰 기본 스타일 제거 */
+    }
+    
+    /* 직원 추가 행 레이아웃 조정 */
+    .emp-add-row {
+        flex-direction: column; /* 세로로 배치 */
+        gap: 10px;
+    }
+    .emp-add-row input[type="color"] {
+        width: 100%; /* 색상 선택기 꽉 차게 */
     }
 }
 /* style.css 맨 아래에 추가하세요 */
