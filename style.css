@@ -1,4 +1,4 @@
-/* style.css : 2025-11-27 최종 완벽 통합본 */
+/* style.css : 2025-11-28 최종 통합본 (모바일 스크롤/터치 완벽 대응) */
 
 /* =========================================
    1. 기본 변수 및 초기화
@@ -51,7 +51,6 @@ body {
     font-weight: 700;
     color: #2c3e50;
     margin: 0;
-    /* 모바일에서 타이틀이 길어질 경우 줄바꿈 허용 */
     word-break: keep-all; 
 }
 
@@ -66,7 +65,7 @@ body {
     color: #555;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     transition: all 0.2s;
-    white-space: nowrap; /* 버튼 글자 줄바꿈 방지 */
+    white-space: nowrap;
 }
 
 .btn-settings:hover {
@@ -90,7 +89,7 @@ body {
 
 /* --- 왼쪽: 달력 섹션 --- */
 .calendar-section {
-    flex: 3; /* 공간을 3만큼 차지 */
+    flex: 3;
 }
 
 .header {
@@ -118,7 +117,7 @@ body {
 }
 .btn-nav:hover { opacity: 0.9; }
 
-/* 달력 그리드 (7열) */
+/* 달력 그리드 */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -126,7 +125,6 @@ body {
     border-left: 1px solid var(--border-color);
 }
 
-/* 요일 헤더 (일, 월, 화...) */
 .day-header {
     background: #f8f9fa;
     padding: 10px;
@@ -138,7 +136,6 @@ body {
 .day-header.sun { color: var(--sunday-color); }
 .day-header.sat { color: var(--saturday-color); }
 
-/* 날짜 칸 */
 .day-cell {
     min-height: 120px;
     border-right: 1px solid var(--border-color);
@@ -163,13 +160,11 @@ body {
     line-height: 24px;
     border-radius: 50%;
 }
-
-/* 휴일 숫자 스타일 */
 .day-cell.holiday .date-num { color: var(--sunday-color) !important; font-weight: bold; }
 .day-cell.sun .date-num { color: var(--sunday-color); }
 .day-cell.sat .date-num { color: var(--saturday-color); }
 
-/* 근무 바 (스케줄 띠) */
+/* 근무 바 */
 .shift-bar {
     font-size: 0.75rem;
     color: white;
@@ -189,9 +184,9 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* --- 오른쪽: 사이드바 섹션 --- */
+/* --- 오른쪽: 사이드바 --- */
 .sidebar-section {
-    flex: 1; /* 공간을 1만큼 차지 */
+    flex: 1;
     min-width: 250px;
     border-left: 1px solid #eee;
     padding-left: 20px;
@@ -203,10 +198,7 @@ body {
     margin-bottom: 15px;
 }
 
-.employee-list {
-    list-style: none;
-    padding: 0;
-}
+.employee-list { list-style: none; padding: 0; }
 
 .employee-item {
     padding: 12px;
@@ -219,24 +211,21 @@ body {
     transition: opacity 0.2s, transform 0.2s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.employee-item:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
-}
+.employee-item:hover { opacity: 0.9; transform: translateY(-1px); }
 
 /* =========================================
    4. 모달 (팝업창) 공통 스타일
    ========================================= */
 .modal {
-    display: none; /* 기본 숨김 */
+    display: none;
     position: fixed;
-    z-index: 1000; /* 제일 위에 뜨게 */
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5); /* 반투명 검정 배경 */
-    backdrop-filter: blur(2px); /* 배경 흐림 효과 */
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
 }
 
 .modal-content {
@@ -264,16 +253,13 @@ body {
     font-weight: bold;
     cursor: pointer;
     color: #aaa;
-    transition: color 0.2s;
 }
 .close-btn:hover { color: #333; }
 
 /* =========================================
    5. 입력 폼 (Form) 스타일
    ========================================= */
-.form-group {
-    margin-bottom: 15px;
-}
+.form-group { margin-bottom: 15px; }
 
 .form-group label {
     display: block;
@@ -283,7 +269,6 @@ body {
     font-size: 0.95rem;
 }
 
-/* 모든 입력 필드 통일 */
 select, input[type="text"], input[type="date"], input[type="password"], input[type="color"], textarea {
     width: 100%;
     padding: 12px;
@@ -292,7 +277,6 @@ select, input[type="text"], input[type="date"], input[type="password"], input[ty
     background-color: var(--input-bg);
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.2s, background-color 0.2s;
     font-family: 'Noto Sans KR', sans-serif;
 }
 
@@ -302,29 +286,12 @@ select:focus, input:focus, textarea:focus {
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 }
 
-/* 읽기 전용 필드 */
-input[readonly] {
-    background-color: #eee;
-    color: #777;
-    cursor: not-allowed;
-}
+input[readonly] { background-color: #eee; color: #777; }
+textarea { resize: vertical; min-height: 80px; }
 
-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
+.time-select-row { display: flex; align-items: center; gap: 10px; }
+.time-select-row select { width: 48%; }
 
-/* 시간 선택 (시/분) 가로 배치 */
-.time-select-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.time-select-row select {
-    width: 48%; /* 반반 차지 */
-}
-
-/* 체크박스 영역 */
 .checkbox-wrapper {
     display: flex;
     align-items: center;
@@ -332,19 +299,10 @@ textarea {
     padding-top: 15px;
     border-top: 1px dashed #eee;
 }
-input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    margin-right: 8px;
-}
+input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: pointer; }
 
-/* 버튼 그룹 (저장/삭제) */
-.btn-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-}
+/* 버튼 그룹 */
+.btn-group { display: flex; gap: 10px; margin-top: 25px; }
 
 .btn-save {
     flex: 1;
@@ -356,7 +314,6 @@ input[type="checkbox"] {
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 .btn-save:hover { background-color: #4cae4c; }
 
@@ -371,62 +328,64 @@ input[type="checkbox"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s;
 }
 .btn-delete:hover { background-color: #c0392b; }
 
 /* =========================================
-   6. 통계 모달 스타일
+   6. 통계 모달 스타일 (리포트용 압축 버전)
    ========================================= */
+#stats-modal .modal-content {
+    max-width: 1000px;
+    width: 95%;
+    padding: 15px;
+    margin: 2% auto;
+}
+
+#stats-table-container { margin-top: 10px; }
+
 .stats-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.95rem;
-    margin-top: 5px;
+    font-size: 0.85rem;
 }
 
 .stats-table th {
     background-color: #f1f3f5;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    font-weight: bold;
-    color: #444;
+    position: sticky; top: 0; z-index: 1;
+    font-weight: bold; color: #444;
+    padding: 6px 4px;
+    border-bottom: 2px solid #ccc;
 }
 
-.stats-table th, .stats-table td {
-    padding: 12px;
+.stats-table td {
+    padding: 4px 4px;
     text-align: center;
     border-bottom: 1px solid #eee;
-}
-
-.stats-footer {
-    background-color: #fafafa;
-    padding: 20px;
-    margin-top: 15px;
-    border-radius: 8px;
-    border: 1px solid #eee;
-}
-
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 1rem;
-    color: #555;
-}
-
-.summary-row.total {
-    font-size: 1.3rem;
-    font-weight: bold;
     color: #333;
-    margin-top: 10px;
-    border-top: 1px solid #ddd;
-    padding-top: 10px;
+    height: 30px;
 }
+
+.stats-day.sun { color: var(--sunday-color); font-weight: bold; }
+.stats-day.sat { color: var(--saturday-color); font-weight: bold; }
+
+.report-summary {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #fcfcfc;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    display: flex; flex-direction: column; gap: 5px;
+}
+.report-summary h3 { font-size: 1rem; margin: 0 0 5px 0; color: #333; }
+.report-summary ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 20px; }
+.report-summary li { font-size: 0.9rem; color: #555; margin: 0; }
+.report-total { margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ddd; font-size: 1.1rem; font-weight: bold; color: var(--primary-color); text-align: right; }
+
+#stats-period { margin-bottom: 10px; font-size: 1rem; font-weight: bold; color: #555; }
+#stats-emp-select { padding: 5px; font-size: 0.9rem; height: 35px; }
 
 /* =========================================
-   7. 환경설정 (직원 관리 리스트) 스타일
+   7. 환경설정 (직원 관리) 스타일
    ========================================= */
 .emp-manage-list {
     max-height: 250px;
@@ -437,255 +396,67 @@ input[type="checkbox"] {
     margin-bottom: 15px;
     background: white;
 }
-
 .emp-manage-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; padding-bottom: 10px;
     border-bottom: 1px solid #f0f0f0;
 }
-.emp-manage-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.emp-add-row {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-sm-del {
-    background: var(--sunday-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 12px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-.btn-sm-del:hover { background: #e74c3c; }
+.emp-manage-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.emp-add-row { display: flex; gap: 10px; }
+.btn-sm-del { background: var(--sunday-color); color: white; border: none; border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 0.85rem; }
 
 /* =========================================
    🚨 8. 모바일 반응형 (화면 폭 768px 이하)
    ========================================= */
+/* =========================================
+   🚨 8. 모바일 반응형 (화면 폭 768px 이하)
+   ========================================= */
 @media screen and (max-width: 768px) {
-    .modal {
-        align-items: center; /* 모달 중앙 정렬 */
-        display: flex;       /* flex로 변경하여 정렬 도움 */
-    }
+    body { padding: 10px; }
+    #main-title { font-size: 1.5rem; }
 
-    .modal-content {
-        width: 90%;
-        margin: 0 auto;      /* 상하 여백 제거 (flex가 처리) */
-        max-height: 85vh;    /* 화면 높이의 85%까지만 차지 */
-        overflow-y: auto;    /* 내용이 넘치면 스크롤 생김 (핵심!) */
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-    }
-    body {
-        padding: 10px;
-    }
-
-    /* 타이틀 크기 조정 */
-    #main-title {
-        font-size: 1.5rem;
-    }
+    /* 메인 레이아웃 세로 정렬 */
+    .main-container { flex-direction: column; padding: 10px; gap: 15px; }
+    .calendar-section, .sidebar-section { width: 100%; flex: none; }
     
-    /* 환경설정 버튼 글자 숨기고 아이콘만 보일 수도 있지만 일단 유지 */
-    .btn-settings {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-    }
+    /* 사이드바 위치 */
+    .sidebar-section { border-left: none; border-top: 2px solid #eee; padding-left: 0; padding-top: 20px; }
 
-    /* 메인 컨테이너 세로 배치 */
-    .main-container {
-        flex-direction: column;
-        padding: 10px;
-        gap: 15px;
-    }
-
-    /* 달력과 사이드바 너비 100% */
-    .calendar-section, 
-    .sidebar-section {
-        width: 100%;
-        flex: none;
-    }
-
-    /* 사이드바 위치 조정 */
-    .sidebar-section {
-        border-left: none;
-        border-top: 2px solid #eee;
-        padding-left: 0;
-        padding-top: 20px;
-    }
-
-    /* 달력 헤더 작게 */
+    /* 달력 요소 크기 축소 */
     .header { margin-bottom: 10px; }
     .year-month { font-size: 1.3rem; }
     .btn-nav { padding: 6px 10px; font-size: 0.85rem; }
-
-    /* 달력 셀 최적화 */
-    .day-cell {
-        min-height: 80px; /* 높이 줄임 */
-        padding: 2px;
-    }
     
-    .date-num {
-        font-size: 0.8rem;
-        width: 20px;
-        height: 20px;
-        line-height: 20px;
-    }
+    .day-cell { min-height: 80px; padding: 2px; }
+    .date-num { font-size: 0.8rem; width: 20px; height: 20px; line-height: 20px; }
+    .shift-bar { font-size: 0.7rem; padding: 2px 4px; margin-bottom: 1px; }
+    .day-header { padding: 5px; font-size: 0.85rem; }
 
-    .shift-bar {
-        font-size: 0.7rem;
-        padding: 2px 4px;
-        margin-bottom: 1px;
-    }
-    
-    .day-header {
-        padding: 5px;
-        font-size: 0.85rem;
-    }
-
-    /* 모달 창 꽉 차게 */
+    /* 🚨 모달 창 수정 (display: flex 제거됨) */
     .modal-content {
         width: 95%;
-        margin: 10% auto;
+        margin: 10% auto; /* 위에서 10% 떨어짐 */
         padding: 20px;
+        /* 핵심: 화면 높이 제한 + 내부 스크롤 허용 */
+        max-height: 85vh; 
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
     }
 
-    /* 폰트 크기 최적화 (가독성) */
-    select, input, textarea, label, .btn-save {
-        font-size: 16px; /* 모바일 입력 확대 방지 */
-    }
+    /* 🚨 색상 선택기 터치 쉽게 확대 */
     input[type="color"] {
-        height: 40px;       /* 높이를 키워서 터치 쉽게 */
-        width: 100%;        /* 너비도 시원하게 */
+        height: 40px;
+        width: 100%;
         padding: 2px;
         border-radius: 4px;
         background: none;
-        -webkit-appearance: none; /* 아이폰 기본 스타일 제거 */
     }
     
-    /* 직원 추가 행 레이아웃 조정 */
-    .emp-add-row {
-        flex-direction: column; /* 세로로 배치 */
-        gap: 10px;
-    }
-    .emp-add-row input[type="color"] {
-        width: 100%; /* 색상 선택기 꽉 차게 */
-    }
-}
-/* style.css 맨 아래에 추가하세요 */
+    /* 직원 추가 행 세로 배치 */
+    .emp-add-row { flex-direction: column; gap: 10px; }
+    .emp-add-row input[type="color"] { width: 100%; }
 
-/* =========================================
-   📊 통계 리포트 모드 (캡처 최적화)
-   ========================================= */
-/* =========================================
-   6. 통계 모달 스타일 (캡처용 초슬림 버전)
-   ========================================= */
-
-/* 모달 창 자체를 넓고 얇게 설정 */
-#stats-modal .modal-content {
-    max-width: 1000px; /* 너비를 아주 넓게 잡아서 줄바꿈 방지 */
-    width: 95%;
-    padding: 15px; /* 내부 여백 축소 */
-    margin: 2% auto; /* 상단 여백 축소 */
-}
-
-/* 테이블 컨테이너 */
-#stats-table-container {
-    margin-top: 10px;
-}
-
-/* 테이블 디자인 */
-.stats-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem; /* 글자 크기 축소 (13px 정도) */
-}
-
-.stats-table th {
-    background-color: #f1f3f5;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    font-weight: bold;
-    color: #444;
-    padding: 6px 4px; /* 여백 대폭 축소 */
-    border-bottom: 2px solid #ccc;
-}
-
-.stats-table td {
-    padding: 4px 4px; /* 셀 높이를 줄이기 위해 여백 최소화 */
-    text-align: center;
-    border-bottom: 1px solid #eee;
-    color: #333;
-    height: 30px; /* 강제로 높이 제한 */
-}
-
-/* 요일 색상 */
-.stats-day.sun { color: var(--sunday-color); font-weight: bold; }
-.stats-day.sat { color: var(--saturday-color); font-weight: bold; }
-
-/* 하단 요약 리포트 (콤팩트 스타일) */
-.report-summary {
-    margin-top: 10px;
-    padding: 10px 15px;
-    background-color: #fcfcfc;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    display: flex; /* 가로 배치 시도 */
-    flex-direction: column;
-    gap: 5px;
-}
-
-.report-summary h3 {
-    font-size: 1rem;
-    margin: 0 0 5px 0;
-    color: #333;
-}
-
-.report-summary ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex; /* 항목들을 가로로 나열해서 공간 절약 */
-    gap: 20px;
-}
-
-.report-summary li {
-    font-size: 0.9rem;
-    color: #555;
-    margin: 0;
-}
-
-.report-total {
-    margin-top: 5px;
-    padding-top: 5px;
-    border-top: 1px dashed #ddd;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    text-align: right; /* 오른쪽 정렬 */
-}
-
-/* 통계 기간 표시 텍스트 작게 */
-#stats-period {
-    margin-bottom: 10px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #555;
-}
-
-/* 직원 선택 박스 작게 */
-#stats-emp-select {
-    padding: 5px;
-    font-size: 0.9rem;
-    height: 35px;
+    /* 폰트 크기 최적화 */
+    select, input, textarea, label, .btn-save { font-size: 16px; }
 }
