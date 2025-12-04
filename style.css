@@ -1,4 +1,4 @@
-/* style.css : 2025-11-28 최종 통합본 (모바일 스크롤/터치 완벽 대응) */
+/* style.css : 2025-11-28 최종 통합 완전판 */
 
 /* =========================================
    1. 기본 변수 및 초기화
@@ -385,111 +385,115 @@ input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: p
 #stats-emp-select { padding: 5px; font-size: 0.9rem; height: 35px; }
 
 /* =========================================
-   7. 환경설정 (직원 관리) 스타일 (수정됨)
+   7. 환경설정 (직원 관리) 스타일
    ========================================= */
+/* 환경설정 모달 창 확장 */
+#settings-modal .modal-content {
+    max-width: 600px;
+    height: 90vh; /* PC에서도 길게 */
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+}
+
+/* 내부 영역 설정 */
+#settings-modal .settings-section { flex: none; }
+#settings-modal .settings-section:last-of-type {
+    flex: 1; /* 남은 공간 다 차지 */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+/* PC용 직원 목록 스타일 (높이 강제 지정 버전) */
 .emp-manage-list {
-    max-height: 300px; /* 목록 전체 높이를 좀 더 시원하게 늘림 */
+    /* flex: 1;  <-- 이거 지우세요! 이게 문제였을 수 있습니다. */
+    
+    height: 400px; /* ★ 핵심: 높이를 400px로 강하게 고정 (5~6명 충분히 보임) */
+    
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 6px;
     padding: 10px;
-    margin-bottom: 15px;
     background: white;
 }
-
 .emp-manage-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; padding-bottom: 10px;
     border-bottom: 1px solid #f0f0f0;
 }
-.emp-manage-item:last-child {
-    border-bottom: none; margin-bottom: 0; padding-bottom: 0;
-}
+.emp-manage-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-/* PC 및 공통: 색상 선택기 크기 확대 */
+/* 색상 선택기 확대 */
 .emp-manage-item input[type="color"] {
-    width: 40px !important;  /* 기존 30px -> 40px로 확대 */
-    height: 40px !important; /* 높이도 확대 */
+    width: 40px !important;
+    height: 40px !important;
     padding: 2px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.emp-add-row { display: flex; gap: 10px; }
+.emp-add-row { display: flex; gap: 10px; margin-top: 5px; }
+/* 삭제 버튼 스타일 (수정됨) */
 .btn-sm-del {
     background: var(--sunday-color);
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 8px 12px; /* 버튼도 살짝 키움 */
+    
+    /* 상하 패딩을 8px -> 4px로 줄여서 납작하게 만듭니다 */
+    padding: 4px 10px; 
+    
     cursor: pointer;
     font-size: 0.85rem;
 }
+
 /* =========================================
-   🚨 8. 모바일 반응형 (화면 폭 768px 이하) - 최종 수정판
+   🚨 8. 모바일 반응형 (화면 폭 768px 이하)
    ========================================= */
 @media screen and (max-width: 768px) {
     body { padding: 10px; }
     #main-title { font-size: 1.5rem; }
 
-    /* 메인 레이아웃 세로 정렬 */
+    /* 레이아웃 세로 정렬 */
     .main-container { flex-direction: column; padding: 10px; gap: 15px; }
     .calendar-section, .sidebar-section { width: 100%; flex: none; }
-    
-    .sidebar-section { 
-        border-left: none; border-top: 2px solid #eee; padding-left: 0; padding-top: 20px; 
-    }
+    .sidebar-section { border-left: none; border-top: 2px solid #eee; padding-left: 0; padding-top: 20px; }
 
     /* 달력 요소 크기 축소 */
     .header { margin-bottom: 10px; }
     .year-month { font-size: 1.3rem; }
     .btn-nav { padding: 6px 10px; font-size: 0.85rem; }
-    
     .day-cell { min-height: 80px; padding: 2px; }
     .date-num { font-size: 0.8rem; width: 20px; height: 20px; line-height: 20px; }
     .shift-bar { font-size: 0.7rem; padding: 2px 4px; margin-bottom: 1px; }
     .day-header { padding: 5px; font-size: 0.85rem; }
 
-    /* 🚨 모달 창 스타일 (여기가 핵심!) */
-    /* display: flex를 넣으면 안 됨! JS가 block으로 켜줄 때만 보여야 함 */
-    .modal {
-        align-items: center; 
-        justify-content: center;
-        /* display: none; <-- 기본은 숨김 (상위 CSS 상속) */
-    }
-    
-    /* 모달이 켜졌을 때(.modal[style*="block"]) 강제로 flex 적용해서 중앙 정렬 */
-    .modal[style*="display: block"] {
-        display: flex !important; 
-    }
+    /* 🚨 모달 창 스타일 (중앙 정렬) */
+    .modal { align-items: center; justify-content: center; }
+    .modal[style*="display: block"] { display: flex !important; }
 
     .modal-content {
-        width: 95%;
-        margin: 0; /* 중앙 정렬을 위해 margin 제거 */
-        padding: 20px;
-        max-height: 85vh; /* 화면 높이 제한 */
-        overflow-y: auto; /* 내부 스크롤 허용 */
-        display: flex;
-        flex-direction: column;
+        width: 95%; margin: 0; padding: 20px;
+        max-height: 90vh; overflow-y: auto;
+        display: flex; flex-direction: column;
     }
 
-    /* 🚨 모바일 환경설정 직원 목록 높이 확대 */
+    /* 🚨 환경설정 모달 높이 강제 지정 */
+    #settings-modal .modal-content { height: 85vh; }
+
+    /* 🚨 직원 목록 리스트 강제 확장 */
     .emp-manage-list {
-        max-height: 40vh; /* 화면 높이의 40%까지 늘어남 (시원하게 보임) */
+        flex: 1; /* 남은 공간 채우기 */
+        min-height: 300px; /* 최소 확보 */
+        max-height: none;
+        overflow-y: auto;
     }
 
-    /* 🚨 모바일 색상 선택기 터치 쉽게 확대 */
-    input[type="color"] {
-        height: 45px !important;
-        width: 100%;
-        border-radius: 4px;
-    }
-    
-    /* 직원 추가 행 세로 배치 */
+    /* 색상 선택기 터치 쉽게 확대 */
+    input[type="color"] { height: 45px !important; width: 100%; border-radius: 4px; }
     .emp-add-row { flex-direction: column; gap: 10px; }
     .emp-add-row input[type="color"] { width: 100%; }
 
