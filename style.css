@@ -385,10 +385,10 @@ input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: p
 #stats-emp-select { padding: 5px; font-size: 0.9rem; height: 35px; }
 
 /* =========================================
-   7. 환경설정 (직원 관리) 스타일
+   7. 환경설정 (직원 관리) 스타일 (수정됨)
    ========================================= */
 .emp-manage-list {
-    max-height: 250px;
+    max-height: 300px; /* 목록 전체 높이를 좀 더 시원하게 늘림 */
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -396,20 +396,41 @@ input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: p
     margin-bottom: 15px;
     background: white;
 }
+
 .emp-manage-item {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 10px; padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
     border-bottom: 1px solid #f0f0f0;
 }
-.emp-manage-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.emp-add-row { display: flex; gap: 10px; }
-.btn-sm-del { background: var(--sunday-color); color: white; border: none; border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 0.85rem; }
+.emp-manage-item:last-child {
+    border-bottom: none; margin-bottom: 0; padding-bottom: 0;
+}
 
+/* PC 및 공통: 색상 선택기 크기 확대 */
+.emp-manage-item input[type="color"] {
+    width: 40px !important;  /* 기존 30px -> 40px로 확대 */
+    height: 40px !important; /* 높이도 확대 */
+    padding: 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.emp-add-row { display: flex; gap: 10px; }
+.btn-sm-del {
+    background: var(--sunday-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px; /* 버튼도 살짝 키움 */
+    cursor: pointer;
+    font-size: 0.85rem;
+}
 /* =========================================
-   🚨 8. 모바일 반응형 (화면 폭 768px 이하)
-   ========================================= */
-/* =========================================
-   🚨 8. 모바일 반응형 (화면 폭 768px 이하)
+   🚨 8. 모바일 반응형 (화면 폭 768px 이하) - 최종 수정판
    ========================================= */
 @media screen and (max-width: 768px) {
     body { padding: 10px; }
@@ -419,8 +440,9 @@ input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: p
     .main-container { flex-direction: column; padding: 10px; gap: 15px; }
     .calendar-section, .sidebar-section { width: 100%; flex: none; }
     
-    /* 사이드바 위치 */
-    .sidebar-section { border-left: none; border-top: 2px solid #eee; padding-left: 0; padding-top: 20px; }
+    .sidebar-section { 
+        border-left: none; border-top: 2px solid #eee; padding-left: 0; padding-top: 20px; 
+    }
 
     /* 달력 요소 크기 축소 */
     .header { margin-bottom: 10px; }
@@ -432,25 +454,39 @@ input[type="checkbox"] { width: 20px; height: 20px; margin-right: 8px; cursor: p
     .shift-bar { font-size: 0.7rem; padding: 2px 4px; margin-bottom: 1px; }
     .day-header { padding: 5px; font-size: 0.85rem; }
 
-    /* 🚨 모달 창 수정 (display: flex 제거됨) */
+    /* 🚨 모달 창 스타일 (여기가 핵심!) */
+    /* display: flex를 넣으면 안 됨! JS가 block으로 켜줄 때만 보여야 함 */
+    .modal {
+        align-items: center; 
+        justify-content: center;
+        /* display: none; <-- 기본은 숨김 (상위 CSS 상속) */
+    }
+    
+    /* 모달이 켜졌을 때(.modal[style*="block"]) 강제로 flex 적용해서 중앙 정렬 */
+    .modal[style*="display: block"] {
+        display: flex !important; 
+    }
+
     .modal-content {
         width: 95%;
-        margin: 10% auto; /* 위에서 10% 떨어짐 */
+        margin: 0; /* 중앙 정렬을 위해 margin 제거 */
         padding: 20px;
-        /* 핵심: 화면 높이 제한 + 내부 스크롤 허용 */
-        max-height: 85vh; 
-        overflow-y: auto;
+        max-height: 85vh; /* 화면 높이 제한 */
+        overflow-y: auto; /* 내부 스크롤 허용 */
         display: flex;
         flex-direction: column;
     }
 
-    /* 🚨 색상 선택기 터치 쉽게 확대 */
+    /* 🚨 모바일 환경설정 직원 목록 높이 확대 */
+    .emp-manage-list {
+        max-height: 40vh; /* 화면 높이의 40%까지 늘어남 (시원하게 보임) */
+    }
+
+    /* 🚨 모바일 색상 선택기 터치 쉽게 확대 */
     input[type="color"] {
-        height: 40px;
+        height: 45px !important;
         width: 100%;
-        padding: 2px;
         border-radius: 4px;
-        background: none;
     }
     
     /* 직원 추가 행 세로 배치 */
