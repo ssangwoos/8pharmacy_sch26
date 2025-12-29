@@ -643,22 +643,32 @@ function loadConfig() {
             const data = doc.data();
             if (data.pharmacyName) config.pharmacyName = data.pharmacyName;
             if (data.password) config.password = data.password;
-            // 👇 [추가] 잠금 설정 읽어오기
+            
+            // 잠금 설정 읽어오기
             if (data.lockPast !== undefined) {
                 config.lockPast = data.lockPast;
             }
         } else {
             console.log("첫 실행입니다. 기본 설정을 사용합니다.");
         }
-        // 이름이 있든 없든, 화면에 제목 표시 (로딩중 제거)
+
+        // 1. 화면 제목 업데이트
         document.getElementById('main-title').innerText = config.pharmacyName + " 근무 스케줄 🗓️";
         document.title = config.pharmacyName + " 근무 스케줄";
+
+        // ★ [핵심 추가] 설정을 다 불러왔으니, 이제 달력을 다시 그려라! 
+        // (이게 있어야 들어오자마자 잠금 처리가 됩니다)
+        renderCalendar();
+
     }).catch((error) => {
         console.log("설정 불러오기 실패:", error);
-        // 에러 나도 제목은 띄워주기
+        
+        // 에러가 나도 제목과 달력은 보여줘야 함
         document.getElementById('main-title').innerText = config.pharmacyName + " 근무 스케줄 🗓️";
+        renderCalendar(); 
     });
 }
 
 // ★ 앱 시작 시 실행
+
 loadConfig();
